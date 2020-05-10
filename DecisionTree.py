@@ -1,3 +1,5 @@
+from sklearn.ensemble import RandomForestClassifier
+
 from clean_up import Classifiers, dane
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -22,3 +24,9 @@ con_matrix = confusion_matrix(y_test, y_pred)
 
 print(acc_score)
 print(con_matrix)
+
+
+rf = RandomForestClassifier()
+rf.fit(X_train,y_train)
+y_pred = rf.predict(X_test)
+print(accuracy_score(y_test, y_pred))
