@@ -1,5 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 dane = pd.read_csv('Adult_train.tab', sep = "\t")
 
@@ -76,6 +80,30 @@ class Classifiers:
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_split_percent)
         return X_train, X_test, y_train, y_test
     #   def trainAndTestClassifier(self, clf, X_train, X_test, y_train):
+    def ensableClassifier(self, clfs, X_train, X_test, y_train):
+        y_preds = []
+        # trenowanie i testowanie wszystkich klasyfikatorów z listy clfs
+        for clf in clfs:
+            clf.fit(X_train, y_train)
+            y_preds.append(clf.predict(X_test))
+        # głosowanie większościowe
+        y_result = y_preds[0]
+        clf_index = 1
+        while (clf_index < len(y_preds)):
+            index = 0
+            while (index < len(y_result)):
+                y_result[index] = y_result[index] + y_preds[clf_index][index]
+                index += 1
+            clf_index += 1
+        # uśrednianie i zaokrąglanie
+        for index, y in enumerate(y_result):
+            y_result[index] = round(y_result[index] / len(clfs))
+        return y_result
+
+    def getClassificationScore(self, clf_name, y_test, y_pred):
+        print("Nazwa klasyfikatora: " + clf_name)
+        print(accuracy_score(y_test, y_pred))
+        print(confusion_matrix(y_test, y_pred))
 
 c=Classifiers()
 X_clean = c.datasetPreprocessing(
@@ -90,36 +118,11 @@ print(X_train)
 print(y_train)
 
 
-def ensableClassifier(self, clfs, X_train, X_test, y_train):
-    y_preds = []
-    # trenowanie i testowanie wszystkich klasyfikatorów z listy clfs
-    for clf in clfs:
-        clf.fit(X_train, y_train)
-        y_preds.append(clf.predict(X_test))
-    # głosowanie większościowe
-    y_result = y_preds[0]
-    clf_index = 1
-    while (clf_index < len(y_preds)):
-        index = 0
-        while (index < len(y_result)):
-            y_result[index] = y_result[index] + y_preds[clf_index][index]
-            index += 1
-        clf_index += 1
-    # uśrednianie i zaokrąglanie
-    for index, y in enumerate(y_result):
-        y_result[index] = round(y_result[index] / len(clfs))
-    return y_result
-
-
-
-
-
-
 # klasyfikacja zespołowa
 y_pred_ensable_train = c.ensableClassifier(
-    [SVC(kernel='linear'), SVC(), KNeighborsClassifier()], X_train, X_train, y_train)
+    [RandomForestClassifier(),DecisionTreeClassifier(), KNeighborsClassifier()], X_train, X_train, y_train)
 y_pred_ensable_test = c.ensableClassifier(
-    [SVC(kernel='linear'), SVC(), KNeighborsClassifier()], X_train, X_test, y_train)
+    [RandomForestClassifier(),DecisionTreeClassifier(), KNeighborsClassifier()], X_train, X_test, y_train)
 c.getClassificationScore("Uczenie zespołowe trenowanie", y_train, y_pred_ensable_train)
 c.getClassificationScore("Uczenie zespołowe testowanie", y_test, y_pred_ensable_test)
-c.plotClassificationResult(X_test['age'],'age', X_test['fare'], 'fare', y_pred_ensable_test)
+#c.plotClassificationResult(X_test['age'],'age', X_test['fare'], 'fare', y_pred_ensable_test)
