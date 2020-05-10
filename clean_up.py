@@ -4,6 +4,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
+from matplotlib import pyplot
 
 dane = pd.read_csv('Adult_train.tab', sep = "\t")
 
@@ -105,6 +106,13 @@ class Classifiers:
         print(accuracy_score(y_test, y_pred))
         print(confusion_matrix(y_test, y_pred))
 
+    def plotClassificationResult(self, column1, x_label, column2, y_label, y_pred):
+        pyplot.scatter(column1, column2, c=y_pred)
+        pyplot.title("Klasyfikacja próbek")
+        pyplot.xlabel(x_label)
+        pyplot.ylabel(y_label)
+        pyplot.show()
+
 c=Classifiers()
 X_clean = c.datasetPreprocessing(
      X = dane,columns_to_map = ['workclass','education','age','marital-status','occupation',
@@ -125,4 +133,31 @@ y_pred_ensable_test = c.ensableClassifier(
     [RandomForestClassifier(),DecisionTreeClassifier(), KNeighborsClassifier()], X_train, X_test, y_train)
 c.getClassificationScore("Uczenie zespołowe trenowanie", y_train, y_pred_ensable_train)
 c.getClassificationScore("Uczenie zespołowe testowanie", y_test, y_pred_ensable_test)
-#c.plotClassificationResult(X_test['age'],'age', X_test['fare'], 'fare', y_pred_ensable_test)
+#c.plotClassificationResult(X_test['age'],'age', X_test['marital-status'], 'marital-status', y_pred_ensable_test)
+
+dane_test1 = pd.read_csv('Adults_test_without_class.tab', sep = "\t")
+dane_test2 = dane_test1.replace("?", pd.np.nan)
+
+dane_test2.dropna(subset=['native-country'])
+print(dane_test2.isnull().sum())
+
+# df['DataFrame Column'] = df['DataFrame Column'].fillna(0)
+
+dane_test2['native-country'] = dane_test2['native-country'] .fillna(0)
+dane_test2['workclass'] = dane_test2['workclass'] .fillna(0)
+dane_test2['occupation'] = dane_test2['occupation'] .fillna(0)
+print(dane_test2.isnull().sum())
+print(dane_test2.dtypes)
+dane_test2.drop(columns=['y'])
+
+
+X_clean2 = c.datasetPreprocessing(
+     X = dane_test2,columns_to_map = ['workclass','education','age','marital-status','occupation',
+                                'relationship', 'race', 'sex', 'native-country'])
+print(X_clean2.dtypes)
+X_clean2 = X_clean2.drop(columns=['y'])
+# klasyfikacja zespołowa
+y_results = c.ensableClassifier(
+    [RandomForestClassifier(),DecisionTreeClassifier(), KNeighborsClassifier()], X_train, X_clean2, y_train)
+print(y_results)
+#c.getClassificationScore("Uczenie zespołowe trenowanie", y_train, y_pred_ensable_train)
