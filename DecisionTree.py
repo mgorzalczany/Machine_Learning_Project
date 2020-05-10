@@ -1,12 +1,12 @@
 from sklearn.ensemble import RandomForestClassifier
 
-from clean_up import Classifiers, dane
+from clean_up import Classifiers, dane, dane_test2
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 c=Classifiers()
 X_clean = c.datasetPreprocessing(
-     X = dane,columns_to_map = ['workclass','education','age','marital-status','occupation',
+     X = dane_test2,columns_to_map = ['workclass','education','age','marital-status','occupation',
                                 'relationship', 'race', 'sex', 'native-country', 'y'])
 print(X_clean.dtypes)
 
