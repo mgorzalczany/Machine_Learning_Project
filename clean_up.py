@@ -23,9 +23,6 @@ dane['occupation'] = dane['occupation'] .fillna(0)
 print(dane.isnull().sum())
 print(dane.dtypes)
 
-
-
-
 #MAPOWANIE#
 
 class Classifiers:
