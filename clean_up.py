@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 dane = pd.read_csv('Adult_train.tab', sep = "\t")
 
@@ -26,17 +27,7 @@ print(dane.dtypes)
 
 #MAPOWANIE#
 
-''' def splitDatasetIntoTrainAndTest(self, X, y, train_split_percent = 0.6):
-        # pd.set_option('display.max_columns', None)
-        # print(X)
-        print(X.info())
-        # print(X.describe())
-        # print(X.describe(include=[pd.np.number]))
-        # print(X.describe(include=[pd.np.object]))
-        # print(X.describe(include=['category']))
-        # print(X.describe(include={'boolean'}))
-        X_train, X_test, y_train, y_test = train_test_split(X,y, train_size=train_split_percent)
-        return X_train, X_test, y_train, y_test '''
+
 class Classifiers:
     def datasetPreprocessing(self, X, columns_to_map):
         X_clean=X
@@ -50,7 +41,19 @@ class Classifiers:
             X_clean[column_name] = X_clean[column_name].map(mapper)
 
         return X_clean
-#   def trainAndTestClassifier(self, clf, X_train, X_test, y_train):
+
+    def splitDatasetIntoTrainAndTest(self, X, y, train_split_percent=0.6):
+        # pd.set_option('display.max_columns', None)
+        # print(X)
+        print(X.info())
+        # print(X.describe())
+        # print(X.describe(include=[pd.np.number]))
+        # print(X.describe(include=[pd.np.object]))
+        # print(X.describe(include=['category']))
+        # print(X.describe(include={'boolean'}))
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_split_percent)
+        return X_train, X_test, y_train, y_test
+    #   def trainAndTestClassifier(self, clf, X_train, X_test, y_train):
 
 c=Classifiers()
 X_clean = c.datasetPreprocessing(
@@ -58,3 +61,6 @@ X_clean = c.datasetPreprocessing(
                                 'relationship', 'race', 'sex', 'native-country', 'y'])
 print(X_clean.dtypes)
 
+X_train, X_test, y_train, y_test = c.splitDatasetIntoTrainAndTest(
+      X=X_clean,
+      y=X_clean['age'])
