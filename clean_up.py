@@ -88,3 +88,38 @@ X_train, X_test, y_train, y_test = c.splitDatasetIntoTrainAndTest(
       y=X_clean['y'])
 print(X_train)
 print(y_train)
+
+
+def ensableClassifier(self, clfs, X_train, X_test, y_train):
+    y_preds = []
+    # trenowanie i testowanie wszystkich klasyfikatorów z listy clfs
+    for clf in clfs:
+        clf.fit(X_train, y_train)
+        y_preds.append(clf.predict(X_test))
+    # głosowanie większościowe
+    y_result = y_preds[0]
+    clf_index = 1
+    while (clf_index < len(y_preds)):
+        index = 0
+        while (index < len(y_result)):
+            y_result[index] = y_result[index] + y_preds[clf_index][index]
+            index += 1
+        clf_index += 1
+    # uśrednianie i zaokrąglanie
+    for index, y in enumerate(y_result):
+        y_result[index] = round(y_result[index] / len(clfs))
+    return y_result
+
+
+
+
+
+
+# klasyfikacja zespołowa
+y_pred_ensable_train = c.ensableClassifier(
+    [SVC(kernel='linear'), SVC(), KNeighborsClassifier()], X_train, X_train, y_train)
+y_pred_ensable_test = c.ensableClassifier(
+    [SVC(kernel='linear'), SVC(), KNeighborsClassifier()], X_train, X_test, y_train)
+c.getClassificationScore("Uczenie zespołowe trenowanie", y_train, y_pred_ensable_train)
+c.getClassificationScore("Uczenie zespołowe testowanie", y_test, y_pred_ensable_test)
+c.plotClassificationResult(X_test['age'],'age', X_test['fare'], 'fare', y_pred_ensable_test)
